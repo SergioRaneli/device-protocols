@@ -1,6 +1,8 @@
 Device Protocols
 ================
 
+[![Build Status](https://travis-ci.org/nspyke/device-protocols.svg?branch=master)](https://travis-ci.org/nspyke/device-protocols)
+
 Simple Python library to parse data from devices using various protocols.
 
 Only GPS103 currently is included.
