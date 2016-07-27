@@ -1,4 +1,5 @@
-from protocols import gps103
+# -*- coding: utf-8 -*-
+from deviceprotocols import gps103
 
 
 def test_get_login_match():

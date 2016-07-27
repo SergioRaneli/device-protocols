@@ -7,10 +7,10 @@ Simple Python library to parse data from devices using various protocols.
 
 Only GPS103 currently is included.
 Others may be added in the future.
- 
+
 To use the library, just import it and call the functions.
 ```
-from protocols import gps103
+from deviceprotocols import gps103
 ```
 
 To test, run
