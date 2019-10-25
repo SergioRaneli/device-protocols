@@ -106,17 +106,21 @@ def get_tyre_data_pattern():
 def get_tyre_data_match(string):
     return get_tyre_data_pattern().match(string)
 
-
 def get_login_pattern():
-    return re.compile(r'^##,imei:(?P<imei>\d+),A;')
+    return re.compile(r'##,imei:(?P<imei>\d+),A;')
 
+def get_alarm_match(string):
+    return get_alarm_match_pattern().match(string)
+
+def get_alarm_match_pattern():
+    return re.compile(r'imei:(?P<imei>\d+),(?P<alarm>[a-z ^,]+),(?P<timestamp>\d+),(?P<phonenumber>\d*),(?P<fix>[FL]),(?P<utc>[^,]*),(?P<fix2>[AV]),(?P<latitude>[^,]*),(?P<latitude_ref>[NS]),(?P<longitude>[^,]*),(?P<longitude_ref>[EW]),(?P<speed>[^,]*),;')
 
 def get_login_match(string):
     return get_login_pattern().match(string)
 
 
 def get_heartbeat_pattern():
-    return re.compile(r'^(?P<imei>\d+);')
+    return re.compile(r'(?P<imei>\d+);')
 
 
 def get_heartbeat_match(string):
@@ -137,9 +141,13 @@ def get_response(data):
     if get_heartbeat_match(data):
         return _create_response(b'ON', "heartbeat")
 
+    #alarm response
+    if get_alarm_match(data):
+         return _create_response(False, "data", "gps")
+
     # GPS data response
     if get_gps_data_match(data):
-        return _create_response(False, "data", "gps")
+        return _create_response(False, "data", "alarm")
 
     # OBD data response
     if get_obd_data_match(data):
