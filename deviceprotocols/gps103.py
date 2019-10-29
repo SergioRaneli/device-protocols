@@ -23,8 +23,25 @@ KEYWORDS_DESCRIPTIONS = {
     "TPMS": "Tyre related message",
 }
 
-
 def get_gps_data_pattern():
+    return re.compile(r'imei:'
+                      '(?P<imei>\d+),'
+                      '(?P<alarm>tracker),'
+                      '(?P<timestamp>\d+),'
+                      '(?P<phonenumber>\d*),'
+                      '(?P<fix>[FL]),'
+                      '(?P<utc>[^,]*),'
+                      '(?P<fix2>[AV]),'
+                      '(?P<latitude>[^,]*),'
+                      '(?P<latitude_ref>[NS]),'
+                      '(?P<longitude>[^,]*),'
+                      '(?P<longitude_ref>[EW]),'
+                      '(?P<stand>[^,]*),'
+                      '(?P<track>[^;]*);')
+
+
+
+def old_get_gps_data_pattern():
     return re.compile(r'imei:'
                       '(?P<imei>\d+),'
                       '(?P<keyword>[^,]+),'
@@ -153,14 +170,18 @@ def get_response(data):
     # Heartbeat response
     if get_heartbeat_match(data):
         return _create_response(b'ON', "heartbeat")
-
-    #alarm response
-    if get_alarm_match(data):
-         return _create_response(False, "data", "alarm")
+        #return _create_response(b'**864895033572098,101,30s', "heartbeat")
 
     # GPS data response
     if get_gps_data_match(data):
         return _create_response(False, "data", "gps")
+
+     #alarm response
+    if  get_alarm_match(data):
+        dati=get_alarm_match(data)
+        message= '**,imei:{},104'.format(dati["imei"])
+        print ('send alarm ackwoldge')
+        return _create_response(bytes(message,'utf-8'), "data", "alarm")
 
     # OBD data response
     if get_obd_data_match(data):
@@ -187,6 +208,12 @@ def _create_response(message, response_type, sub_response_type=None):
 
     return r
 
+
+def cancel_alarm(imei):
+    message = "**,imei:{},104".format(imei)
+    r = {"message": message, "type": "command"}
+
+    return r
 
 def convert_degrees_minutes_to_decimal(degrees, minutes, hemisphere):
     """
